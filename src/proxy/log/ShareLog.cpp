@@ -88,7 +88,7 @@ void xmrig::ShareLog::accept(const AcceptEvent *event)
     std::string color;
     std::string emoji;
 
-    if (actual >= 2'000'000) {
+    if (actual >= 2000000) {
         color = "\x1B[1;31m"; // Rød
         emoji = " 🔔";
     }
