@@ -80,14 +80,41 @@ void xmrig::ShareLog::accept(const AcceptEvent *event)
         return;
     }
 
-    LOG_INFO("%s " CYAN("%04u ") GREEN_BOLD("accepted") " (%" PRId64 "/%" PRId64 "+%" PRId64 ") diff " WHITE_BOLD("%" PRIu64) " actual " WHITE_BOLD("%" PRIu64) " ip " WHITE_BOLD("%s") " " BLACK_BOLD("(%" PRIu64 " ms)"),
-         Tags::proxy(), event->mapperId(), m_stats->data().accepted, m_stats->data().rejected,
-         m_stats->data().invalid, event->result.diff, event->result.actualDiff, event->ip(), event->result.elapsed);
+    const uint64_t diff = event->result.diff;
+    const uint64_t actual = event->result.actualDiff;
+    const double effort = static_cast<double>(actual) / static_cast<double>(diff);
 
-    /*
-    LOG_INFO("%s " CYAN("%04u ") GREEN_BOLD("accepted") " (%" PRId64 "/%" PRId64 "+%" PRId64 ") diff " WHITE_BOLD("%" PRIu64) " ip " WHITE_BOLD("%s") " " BLACK_BOLD("(%" PRIu64 " ms)"),
-             Tags::proxy(), event->mapperId(), m_stats->data().accepted, m_stats->data().rejected, m_stats->data().invalid, event->result.diff, event->ip(), event->result.elapsed);
-     */
+    // ANSI-farver og emoji
+    std::string color;
+    std::string emoji;
+
+    if (actual >= 2'000'000) {
+        color = "\x1B[1;31m"; // Rød
+        emoji = " 🔔";
+    }
+    else if (effort >= 10.0) {
+        color = "\x1B[1;35m"; // Magenta
+    }
+    else if (effort >= 5.0) {
+        color = "\x1B[1;33m"; // Gul
+    }
+    else if (effort >= 2.0) {
+        color = "\x1B[1;32m"; // Grøn
+    }
+    else {
+        color = ""; // Ingen farve
+    }
+
+    const std::string reset = "\x1B[0m";
+
+
+    LOG_INFO("%s " CYAN("%04u ") GREEN_BOLD("accepted") " (%" PRId64 "/%" PRId64 "+%" PRId64 ") diff " WHITE_BOLD("%" PRIu64) " actual %s%" PRIu64 "%s effort x%.2f%s ip " WHITE_BOLD("%s") " " BLACK_BOLD("(%" PRIu64 " ms)"),
+         Tags::proxy(), event->mapperId(), m_stats->data().accepted,
+         m_stats->data().rejected, m_stats->data().invalid,
+         diff, color.c_str(), actual, reset.c_str(),
+         effort, emoji.c_str(),
+         event->ip(), event->result.elapsed);
+
 }
 
 
