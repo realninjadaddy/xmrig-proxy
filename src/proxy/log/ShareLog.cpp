@@ -93,7 +93,7 @@ void xmrig::ShareLog::accept(const AcceptEvent *event)
         emoji = " 🔔";
     }
     else if (effort >= 10.0) {
-        color = "\x1B[1;35m"; // Magenta
+        color = "\x1B[1;36m"; // Lys blå
     }
     else if (effort >= 5.0) {
         color = "\x1B[1;33m"; // Gul
